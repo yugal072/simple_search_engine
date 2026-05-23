@@ -15,6 +15,7 @@ arxiv_wrapper = ArxivAPIWrapper(
     # These parameters help avoid the old API issues
     search_kwargs={'max_results': 2}
 )
+arxiv = ArxivQueryRun(api_wrapper=arxiv_wrapper)
 
 wiki_wrapper = WikipediaAPIWrapper(
     top_k_results=3, 
