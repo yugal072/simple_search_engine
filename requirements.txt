@@ -10,3 +10,4 @@ ddgs>=9.0.0
 arxiv
 wikipedia
 langchain-groq
+pymupdf
