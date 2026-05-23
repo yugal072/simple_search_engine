@@ -5,18 +5,26 @@ from langchain_community.tools import ArxivQueryRun, WikipediaQueryRun, DuckDuck
 from langchain_classic.agents import initialize_agent, AgentType
 from langchain_classic.callbacks import StreamlitCallbackHandler
 
-
 ## Arxiv and Wikipedia tools
 arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250)
 arxiv = ArxivQueryRun(api_wrapper=arxiv_wrapper)
 
-wiki_wrapper = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=250)
+wiki_wrapper = WikipediaAPIWrapper(
+    top_k_results=3, 
+    doc_content_chars_max=300,
+    # This is the most important part:
+    wiki_client_kwargs={
+        "user_agent": "LangchainStreamlitChat/1.0 (contact: yugalupadhyay588@gmail.com)"
+    }
+)
+
 wiki = WikipediaQueryRun(api_wrapper=wiki_wrapper)
 
-search = DuckDuckGoSearchResults(name="search", output_format="list")
+search = DuckDuckGoSearchResults(name="search", output_format="list", num_results=3)
 
 
 st.title("Langchain---Chat with search")
+
 
 
 # Sidebar for settings
@@ -46,11 +54,16 @@ if prompt:= st.chat_input(placeholder="what is machine learning"):
         llm,
         agent= AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
         handle_parsing_errors = True,
+        max_iteration = 10,
+        early_stopping_method="generate",
         verbose = True
     )
     
     with st.chat_message("assistant"):
         st.cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)
-        response = search_agent.run(st.session_state.messages,callbacks=[st.cb])
-        st.session_state.messages.append({'role':'assistant', 'content': response})
-        st.write(response)
+        try:
+            response = search_agent.run(st.session_state.messages,callbacks=[st.cb])
+            st.session_state.messages.append({'role':'assistant', 'content': response})
+            st.write(response)
+        except:
+            response = f"Sorry, I encountered an error: {str(e)[:200]}"
