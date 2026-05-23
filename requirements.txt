@@ -6,7 +6,7 @@ langchain
 python-dotenv
 langchain-huggingface
 streamlit
-duckduckgo-search>=4.0.0
+ddgs>=9.0.0
 arxiv
 wikipedia
 langchain-groq
