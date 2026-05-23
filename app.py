@@ -8,8 +8,13 @@ import wikipedia
 wikipedia.set_user_agent("LangchainStreamlitChat/1.0 (contact: yugalupadhyay588@gmail.com)")
 
 ## Arxiv and Wikipedia tools
-arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250, load_max_docs=2)
-arxiv = ArxivQueryRun(api_wrapper=arxiv_wrapper)
+arxiv_wrapper = ArxivAPIWrapper(
+    top_k_results=2,
+    doc_content_chars_max=350,
+    load_max_docs=2,
+    # These parameters help avoid the old API issues
+    search_kwargs={'max_results': 2}
+)
 
 wiki_wrapper = WikipediaAPIWrapper(
     top_k_results=3, 
