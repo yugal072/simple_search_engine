@@ -10,7 +10,7 @@ arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250)
 arxiv = ArxivQueryRun(api_wrapper=arxiv_wrapper)
 
 wiki_wrapper = WikipediaAPIWrapper(
-    top_k_results=3, 
+    top_k_results=2, 
     doc_content_chars_max=300,
     # This is the most important part:
     wiki_client_kwargs={
@@ -45,25 +45,28 @@ if prompt:= st.chat_input(placeholder="what is machine learning"):
     st.session_state.messages.append({"role":"user", "content": prompt})
     st.chat_message("user").write(prompt)
     
-    llm = ChatGroq(api_key = api_key, model = "llama-3.1-8b-instant", streaming=True)
+    llm = ChatGroq(api_key = api_key, model = "llama-3.3-70b-versatile", streaming=True)
     
     tools = [search, arxiv, wiki]
     
     search_agent = initialize_agent(
         tools,
         llm,
-        agent= AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+        agent= =AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, 
         handle_parsing_errors = True,
-        max_iteration = 10,
+        max_iteration = 8,
         early_stopping_method="generate",
-        verbose = True
+        verbose = True,
+        return_intermediate_steps=False
     )
     
     with st.chat_message("assistant"):
         st.cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)
         try:
-            response = search_agent.run(st.session_state.messages,callbacks=[st.cb])
+            response = search_agent.run(prompt,callbacks=[st.cb])
             st.session_state.messages.append({'role':'assistant', 'content': response})
             st.write(response)
         except:
             response = f"Sorry, I encountered an error: {str(e)[:200]}"
+            st.error(error_msg)
+            st.session_state.messages.append({"role": "assistant", "content": error_msg})
