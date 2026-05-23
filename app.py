@@ -6,7 +6,7 @@ from langchain_classic.agents import initialize_agent, AgentType
 from langchain_classic.callbacks import StreamlitCallbackHandler
 
 ## Arxiv and Wikipedia tools
-arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250)
+arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250, load_max_docs=2)
 arxiv = ArxivQueryRun(api_wrapper=arxiv_wrapper)
 
 wiki_wrapper = WikipediaAPIWrapper(
@@ -45,14 +45,14 @@ if prompt:= st.chat_input(placeholder="what is machine learning"):
     st.session_state.messages.append({"role":"user", "content": prompt})
     st.chat_message("user").write(prompt)
     
-    llm = ChatGroq(api_key = api_key, model = "llama-3.1-8b-instant", streaming=True, max_tokens=1024)
+    llm = ChatGroq(api_key = api_key, model = "llama-3.3-70b-versatile", streaming=True, max_tokens=1024)
     
-    tools = [search, arxiv, wiki]
+    tools = [search,  wiki, arxiv]
     
     search_agent = initialize_agent(
         tools,
         llm,
-        agent= AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+        agent= AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, 
         handle_parsing_errors = True,
         max_iteration = 8,
         early_stopping_method="generate",
@@ -62,8 +62,10 @@ if prompt:= st.chat_input(placeholder="what is machine learning"):
     with st.chat_message("assistant"):
         st.cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=True)
         try:
-            response = search_agent.run(st.session_state.messages,callbacks=[st.cb])
+            response = search_agent.run(prompt,callbacks=[st.cb])
             st.session_state.messages.append({'role':'assistant', 'content': response})
             st.write(response)
         except:
-            response = f"Sorry, I encountered an error: {str(e)[:200]}"
+            error_msg = f"Sorry, I encountered an error: {str(e)[:180]}..."
+            st.error(error_msg)
+            st.session_state.messages.append({"role": "assistant", "content": error_msg})
