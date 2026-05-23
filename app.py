@@ -4,6 +4,8 @@ from langchain_community.utilities import ArxivAPIWrapper, WikipediaAPIWrapper
 from langchain_community.tools import ArxivQueryRun, WikipediaQueryRun, DuckDuckGoSearchResults
 from langchain_classic.agents import initialize_agent, AgentType
 from langchain_classic.callbacks import StreamlitCallbackHandler
+import wikipedia
+wikipedia.set_user_agent("LangchainStreamlitChat/1.0 (contact: yugalupadhyay588@gmail.com)")
 
 ## Arxiv and Wikipedia tools
 arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250, load_max_docs=2)
