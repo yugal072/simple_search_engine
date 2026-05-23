@@ -52,7 +52,7 @@ if prompt:= st.chat_input(placeholder="what is machine learning"):
     search_agent = initialize_agent(
         tools,
         llm,
-        agent= =AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, 
+        agent= AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION, 
         handle_parsing_errors = True,
         max_iteration = 8,
         early_stopping_method="generate",
