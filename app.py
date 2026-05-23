@@ -4,9 +4,7 @@ from langchain_community.utilities import ArxivAPIWrapper, WikipediaAPIWrapper
 from langchain_community.tools import ArxivQueryRun, WikipediaQueryRun, DuckDuckGoSearchResults
 from langchain_classic.agents import initialize_agent, AgentType
 from langchain_classic.callbacks import StreamlitCallbackHandler
-import os
-from dotenv import load_dotenv
-load_dotenv()
+
 
 ## Arxiv and Wikipedia tools
 arxiv_wrapper = ArxivAPIWrapper(top_k_results=1,doc_content_chars_max=250)
@@ -22,8 +20,8 @@ st.title("Langchain---Chat with search")
 
 
 # Sidebar for settings
-st.sidebar.title("Settings")
-api_key = os.getenv("GROQ_API_KEY")
+
+api_key = st.secrets["GROQ_API_KEY"]
 
 
 
